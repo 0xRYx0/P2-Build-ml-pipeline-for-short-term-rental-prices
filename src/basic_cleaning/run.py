@@ -55,7 +55,7 @@ def go(args):
 
     logger.info("SUCCESS: Applied required fixes") 
     
-    filename = "clean_sample"
+    filename = "clean_sample.csv"
     df.to_csv(filename, index=False)
     
     artifact = wandb.Artifact(
