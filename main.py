@@ -1,3 +1,14 @@
+"""
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Udacity     :  Machine Learning DevOps Engineer (MLOps) Nano-degree
+  Project     :  2 - Build an ML Pipeline for Short-term Rental Prices in NYC
+  Step        :  Pipeline Execution
+  Description :  Main script for running the pipeline
+  Author      :  Rakan Yamani
+  Date        :  15 June 2023
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+"""
+
 import json
 
 import mlflow
@@ -12,26 +23,29 @@ _steps = [
     "basic_cleaning",
     "data_check",
     "data_split",
-    "train_random_forest",
+    "train_random_forest"
     # NOTE: We do not include this in the steps so it is not run by mistake.
     # You first need to promote a model export to "prod" before you can run this,
     # then you need to run this step explicitly
-#    "test_regression_model"
+    # "test_regression_model"
 ]
 
 
 # This automatically reads in the configuration
-@hydra.main(config_name='config')
+@hydra.main(config_name='config.yaml')
 def go(config: DictConfig):
 
     # Setup the wandb experiment. All runs will be grouped under this name
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
+    print(os.environ["WANDB_PROJECT"])
     os.environ["WANDB_RUN_GROUP"] = config["main"]["experiment_name"]
-
+    print(os.environ["WANDB_RUN_GROUP"])
+    
     # Steps to execute
     steps_par = config['main']['steps']
+    print(steps_par)
     active_steps = steps_par.split(",") if steps_par != "all" else _steps
-
+    print(active_steps)
     # Move to a temporary directory
     with tempfile.TemporaryDirectory() as tmp_dir:
 
@@ -50,22 +64,44 @@ def go(config: DictConfig):
             )
 
         if "basic_cleaning" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+            _ = mlflow.run(
+                os.path.join(hydra.utils.get_original_cwd(), "src", "basic_cleaning"),
+                "main",
+                parameters={
+                    "input_artifact": "sample.csv:latest",
+                    "output_artifact_name": "clean_sample.csv",
+                    "output_artifact_type": "clean_sample",
+                    "output_artifact_description": "Data with outliers and null values removed",
+                    "min_price": config['etl']['min_price'],
+                    "max_price": config['etl']['max_price']
+                },
+            )
 
         if "data_check" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+            _ = mlflow.run(
+                os.path.join(hydra.utils.get_original_cwd(), "src", "data_check"),
+                "main",
+                parameters={
+                    "csv": "nyc_airbnb/clean_sample.csv:latest",
+                    "ref": "nyc_airbnb/clean_sample.csv:reference",
+                    "kl_threshold": config['data_check']['kl_threshold'],
+                    "min_price": config['etl']['min_price'],
+                    "max_price": config['etl']['max_price']
+                },
+            ) 
+
 
         if "data_split" in active_steps:
-            ##################
-            # Implement here #
-            ##################
-            pass
+            _ = mlflow.run(
+                os.path.join(hydra.utils.get_original_cwd(), "src", "data_split"),
+                "main",
+                parameters={
+                    "input_data": "nyc_airbnb/clean_sample.csv:latest",
+                    "test_size": config['modeling']['test_size'],
+                    "random_state": config['modeling']['random_state'],
+                    "stratify": config['modeling']['stratify']
+                },
+            )
 
         if "train_random_forest" in active_steps:
 
@@ -76,21 +112,33 @@ def go(config: DictConfig):
 
             # NOTE: use the rf_config we just created as the rf_config parameter for the train_random_forest
             # step
-
-            ##################
-            # Implement here #
-            ##################
-
-            pass
+    
+            _ = mlflow.run(
+                    os.path.join(hydra.utils.get_original_cwd(), "src",  "train_random_forest"),
+                    "main",
+                    parameters={
+                        "trainval_artifact": "nyc_airbnb/trainval_data.csv:latest",
+                        "val_size": config['modeling']['val_size'],
+                        "random_state": config['modeling']['random_state'],
+                        "stratify": config['modeling']['stratify'],
+                        "rf_config": rf_config,
+                        "max_tfidf_features": config['modeling']['max_tfidf_features'],
+                        "output_artifact": "random_forest_pipeline"
+                    },
+            )            
 
         if "test_regression_model" in active_steps:
-
-            ##################
-            # Implement here #
-            ##################
-
-            pass
+            _ = mlflow.run(
+                    os.path.join(hydra.utils.get_original_cwd(), "src", "test_regression_model"),
+                    "main",
+                    parameters={
+                        "mlflow_model": "nyc_airbnb/random_forest_pipeline:prod",
+                        "test_dataset": "nyc_airbnb/test_data.csv:latest"
+                    },
+            )  
 
 
 if __name__ == "__main__":
+    print('Main function was called')
     go()
+    print('Main function was finished')
