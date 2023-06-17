@@ -13,7 +13,7 @@ entry_points:
         description: Size of the validation split. Fraction of the dataset, or number of items
         type: string
 
-      random_seed:
+      random_state:
         description: Seed for the random number generator. Use this for reproducibility
         type: string
         default: 42
@@ -31,6 +31,7 @@ entry_points:
       max_tfidf_features:
         description: Maximum number of words to consider for the TFIDF
         type: string
+        default: 10
 
       output_artifact:
         description: Name for the output artifact
@@ -39,7 +40,7 @@ entry_points:
     command: >-
       python run.py --trainval_artifact {trainval_artifact} \
                     --val_size {val_size} \
-                    --random_seed {random_seed} \
+                    --random_state {random_state} \
                     --stratify_by {stratify_by} \
                     --rf_config {rf_config} \
                     --max_tfidf_features {max_tfidf_features} \
