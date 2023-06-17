@@ -68,9 +68,9 @@ def test_proper_boundaries(data: pd.DataFrame):
     """
     Test proper longitude and latitude boundaries for properties in and around NYC
     """
-    # idx = data['longitude'].between(-74.25, -73.50) & data['latitude'].between(40.5, 41.2)
+    idx = data['longitude'].between(-74.25, -73.50) & data['latitude'].between(40.5, 41.2)
     
-    # assert np.sum(~idx) == 0
+    assert np.sum(~idx) == 0
     logger.info("SUCCESS: Testing - Proper longitude and latitude boundaries for properties in and around NYC")
 
 
