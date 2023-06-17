@@ -215,7 +215,7 @@ def go(args):
     mlflow.sklearn.save_model(
         sk_pipe,
         "models/random_forest_dir",
-        signature=signature,
+        # signature=signature,
         input_example=X_val.iloc[:5]
     )
     logger.info("Success: Saving sk_pipe pipeline as a mlflow.sklearn model in the directory 'models/random_forest_dir'")
@@ -234,8 +234,6 @@ def go(args):
     
     # Plot feature importance
     logger.info("Creating feature importance model")
-    # logger('### pipe:\n' + str(sk_pipe))
-    # logger('### processed_features:\n' + str(processed_features))
     fig_feat_imp = plot_feature_importance(sk_pipe, processed_features)
     logger.info("Success: Creating feature importance model")
 
