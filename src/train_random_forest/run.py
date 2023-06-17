@@ -202,10 +202,14 @@ def go(args):
     logger.info(f"Score: {r_squared}")
     logger.info(f"MAE: {mae}")
     
+    print(f"Score:\t{r_squared:.4f}")
+    print(f"MAE:\t{mae:.4f}")
+    
+    logger.info("Success: Exporting model")
     
     # extract models signatures 
-    signature = mlflow.models.infer_signature(X_val[processed_features], y_pred)
-    logger.info("Success: Exporting model")
+    # signature = mlflow.models.infer_signature(X_val[processed_features], y_pred)
+    
 
     # Save model package in the MLFlow sklearn format
     if os.path.exists("models/random_forest_dir"):
