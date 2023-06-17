@@ -12,8 +12,15 @@ from sklearn.metrics import mean_absolute_error
 from wandb_utils.log_artifact import log_artifact
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
+logging.basicConfig(
+    filename='./../logs/logging.log',
+    filemode='a',
+    level=logging.INFO,
+    format='%(asctime)s %(name)s %(levelname)s - %(message)s',
+    datefmt="%m/%d/%y %I:%M:%S %p")
 logger = logging.getLogger()
+logger.info("SUCCESS: accessing logging.log file")
+
 
 
 def go(args):

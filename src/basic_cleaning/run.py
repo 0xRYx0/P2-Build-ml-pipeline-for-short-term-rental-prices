@@ -18,8 +18,6 @@ import argparse
 import pandas as pd
 
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
-
 
 logging.basicConfig(
     filename='./../logs/logging.log',
