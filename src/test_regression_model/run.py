@@ -22,7 +22,6 @@ logger = logging.getLogger()
 logger.info("SUCCESS: accessing logging.log file")
 
 
-
 def go(args):
 
     run = wandb.init(job_type="test_model")
