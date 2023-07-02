@@ -109,7 +109,7 @@ The pipeline shows each component with its own input and output artifacts. These
             be a little slower.
 
 
-##### In case of errors
+#### In case of errors
 * To clean up all conda environments created by `mlflow`: 
  ```
  > conda info --envs | grep mlflow | cut -f1 -d" "
